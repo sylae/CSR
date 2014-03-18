@@ -51,7 +51,33 @@ function get_score($i) {
   arsort($scores);
   $s = reset($scores);
   $c = array_search($s, $scores);
-  return $c;
+  return strToConst($c);
+}
+
+function strToConst($str) {
+  $map = array(
+    'Best' => B,
+    'Good' => G,
+    'Average' => A,
+    'Substandard' => S,
+    'Poor' => P,
+  );
+  foreach ($map as $k => $v) {
+    if ($k == $str) return $v;
+  }
+}
+
+function ConstToStr($c) {
+  $map = array(
+    'Best' => B,
+    'Good' => G,
+    'Average' => A,
+    'Substandard' => S,
+    'Poor' => P,
+  );
+  foreach ($map as $k => $v) {
+    if ($v == $c) return $k;
+  }
 }
 
 function bgasp($input) {
@@ -60,11 +86,11 @@ function bgasp($input) {
   $tot = array_sum($input);
   
   $pts = array(
-    'Best' => 5,
-    'Good' => 4,
-    'Average' => 3,
-    'Substandard' => 2,
-    'Poor' => 1,
+    B => 5,
+    G => 4,
+    A => 3,
+    S => 2,
+    P => 1,
   );
   foreach ($input as $cat => $num) {
     $pct[$cat] = $num/$tot;
@@ -73,7 +99,7 @@ function bgasp($input) {
   $csr = $val/$tot;
   $ret = "Composite Score: ".number_format($csr,1)."/5.0".PHP_EOL.PHP_EOL;
     foreach ($input as $cat => $num) {
-      $ret .= $cat.": ".number_format($pct[$cat]*100,2)."% (".$num."/".$tot.")".PHP_EOL;
+      $ret .= ConstToStr($cat).": ".number_format($pct[$cat]*100,2)."% (".$num."/".$tot.")".PHP_EOL;
   }
   return $ret;
 }
