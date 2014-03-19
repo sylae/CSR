@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: iridium.local
--- Generation Time: Mar 19, 2014 at 12:31 AM
+-- Generation Time: Mar 19, 2014 at 12:09 PM
 -- Server version: 5.6.14
 -- PHP Version: 5.4.4-14+deb7u5
 
@@ -72,4 +72,4 @@ CREATE TABLE IF NOT EXISTS `topic` (
 --
 DROP TABLE IF EXISTS `composite`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`csr`@`%` SQL SECURITY DEFINER VIEW `composite` AS select `topic`.`tid` AS `tid`,`topic`.`title` AS `title`,sum((`post`.`rating` = 5)) AS `B`,sum((`post`.`rating` = 4)) AS `G`,sum((`post`.`rating` = 3)) AS `A`,sum((`post`.`rating` = 2)) AS `S`,sum((`post`.`rating` = 1)) AS `P` from (`topic` join `post` on((`post`.`tid` = `topic`.`tid`))) group by `topic`.`tid`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`csr`@`%` SQL SECURITY DEFINER VIEW `composite` AS select `topic`.`tid` AS `tid`,`topic`.`title` AS `title`,ifnull(sum((`post`.`rating` = 5)),0) AS `B`,ifnull(sum((`post`.`rating` = 4)),0) AS `G`,ifnull(sum((`post`.`rating` = 3)),0) AS `A`,ifnull(sum((`post`.`rating` = 2)),0) AS `S`,ifnull(sum((`post`.`rating` = 1)),0) AS `P` from (`topic` left join `post` on((`post`.`tid` = `topic`.`tid`))) group by `topic`.`tid`;
