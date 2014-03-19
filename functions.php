@@ -103,3 +103,19 @@ function bgasp($input) {
   }
   return $ret;
 }
+
+function u($id) {
+  return "http://spiderwebforums.ipbhost.com/index.php?/topic/".$id."-/";
+}
+
+function isTopScenario($r) {
+  return ($r[B]/$r['sum'] >= 0.3);
+}
+
+function isQualScenario($r) {
+  return (($r[B]+$r[G])/$r['sum'] >= 0.75);
+}
+
+function isWorthScenario($r) {
+  return (($r[B]+$r[G])/$r['sum'] >= 0.3);
+}
