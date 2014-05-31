@@ -216,4 +216,16 @@ class scenario {
     //$db->extended->executeMultiple($sth, $postdata);
   }
 
+  function getPostPayload() {
+    $data = array(
+      'title' => $this->title,
+      'tid' => $this->tid,
+      'tags' => $this->tags,
+      'bgasp' => $this->bgasp,
+    );
+    var_dump($data);
+    $payload = base64_encode(json_encode($data));
+    return '[composite=' . $payload . ']' . PHP_EOL . $this->bgaspBB() . PHP_EOL . '[/composite]';
+  }
+
 }
