@@ -36,7 +36,7 @@ class scenario {
   }
 
   function _setDB() {
-    $this->db = & MDB2::connect($this->config['db']);
+    $this->db = & MDB2::singleton($this->config['db']);
     if (PEAR::isError($this->db)) {
       die($this->db->getMessage());
     }
