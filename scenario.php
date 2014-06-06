@@ -5,17 +5,12 @@
  *
  * @author Sylae Jiendra Corell <sylae@calref.net>
  */
-class scenario {
+class scenario extends CSR {
 
   public $tid;
   public $title;
   public $tags;
   public $bgasp;
-  private $config;
-  private $db;
-  private $url;
-  private $sw = "http://spiderwebforums.ipbhost.com/index.php?/topic/%s-/";
-  private $html = false;
   private $map = array(
     'Best' => B,
     'Good' => G,
@@ -28,22 +23,13 @@ class scenario {
     global $config;
     $this->tid = $tid;
     $this->config = $config;
-    $this->url = sprintf($this->sw, $this->tid);
     $this->_setDB();
 
     // Load or parse topic information
-    $this->loadMeta();
+    $this->populateVars();
   }
 
-  function _setDB() {
-    $this->db = & MDB2::singleton($this->config['db']);
-    if (PEAR::isError($this->db)) {
-      die($this->db->getMessage());
-    }
-    $this->db->loadModule('Extended', null, false);
-  }
-
-  function loadMeta() {
+  function populateVars() {
     // Check database
     $query = 'SELECT * FROM composite WHERE tid='
       . $this->db->quote($this->tid, 'integer') . ';';
@@ -66,87 +52,7 @@ class scenario {
       $this->tags = $tag;
       $this->bgasp = $bgasp;
     } else {
-      // Okay, create it. Let's grab the HTML and parse the title.
-      $this->html();
-      $this->title = htmlqp($this->html, '.ipsType_pagetitle')->text();
-
-      $query = 'INSERT INTO topic (tid, title) VALUES ('
-        . $this->db->quote($this->tid, 'integer') . ', '
-        . $this->db->quote($this->title, 'text') . ')';
-      $res = & $this->db->exec($query);
-      
-      // We'll also fetch info
-    }
-  }
-
-  function html() {
-    if ($this->html) {
-      return false;
-    }
-
-    $this->html = file_get_contents($this->url);
-  }
-
-// http://stackoverflow.com/a/5430851
-  function string_compare($str_a, $str_b) {
-    $length = strlen($str_a);
-    $length_b = strlen($str_b);
-
-    $i = 0;
-    $segmentcount = 0;
-    $segmentsinfo = array();
-    $segment = '';
-    while ($i < $length) {
-      $char = substr($str_a, $i, 1);
-      if (strpos($str_b, $char) !== FALSE) {
-        $segment = $segment . $char;
-        if (strpos($str_b, $segment) !== FALSE) {
-          $segmentpos_a = $i - strlen($segment) + 1;
-          $segmentpos_b = strpos($str_b, $segment);
-          $positiondiff = abs($segmentpos_a - $segmentpos_b);
-          $posfactor = ($length - $positiondiff) / $length_b; // <-- ?
-          $lengthfactor = strlen($segment) / $length;
-          $segmentsinfo[$segmentcount] = array('segment' => $segment, 'score' => ($posfactor * $lengthfactor));
-        } else {
-          $segment = '';
-          $i--;
-          $segmentcount++;
-        }
-      } else {
-        $segment = '';
-        $segmentcount++;
-      }
-      $i++;
-    }
-
-    // PHP 5.3 lambda in array_map      
-    $totalscore = array_sum(array_map(function($v) {
-        return $v['score'];
-      }, $segmentsinfo));
-    return $totalscore;
-  }
-
-  function get_score($i) {
-    $scores = array(
-      'Best' => null,
-      'Good' => null,
-      'Average' => null,
-      'Substandard' => null,
-      'Poor' => null,
-    );
-    foreach ($scores as $key => $score) {
-      $scores[$key] = $this->string_compare($key, ucfirst(strtolower(trim(strip_tags($i)))));
-    }
-    arsort($scores);
-    $s = reset($scores);
-    $c = array_search($s, $scores);
-    return $this->strToConst($c);
-  }
-
-  function strToConst($str) {
-    foreach ($this->map as $k => $v) {
-      if ($k == $str)
-        return $v;
+      // TODO: Impliment scenPoll
     }
   }
 
@@ -194,24 +100,6 @@ class scenario {
   }
 
   /**
-   * Scan for ratings and insert them into the db
-   */
-  function getRatings() {
-    $postdata = array();
-    $this->html();
-    var_dump($this->html);
-    foreach (htmlqp($this->html, '#csr-rating') as $item) {
-      $score = $this->get_score($item->attr("data-csr-rating"));
-      if ($c = preg_match_all("/entry(\\d+)/is", $item->closest('.post_block')->children('a')->attr('id'), $matches)) {
-        $c1 = $matches[1][0];
-      }
-      $postdata[] = array($c1, $this->tid, $score);
-    }
-    $sth = $this->db->prepare('INSERT INTO post (pid, tid, rating) VALUES (?, ?, ?)');
-    $this->db->extended->executeMultiple($sth, $postdata);
-  }
-  
-  /**
    * Generate a [composite] BBcode tag ready for injections into the post
    * 
    * @return string Payload ready for insertion
@@ -223,7 +111,7 @@ class scenario {
       'tags' => $this->tags,
       'bgasp' => $this->bgasp,
     );
-    if ($config['debug']) {
+    if ($this->config['debug']) {
       $payload = base64_encode(json_encode($data, JSON_PRETTY_PRINT));
     } else {
       $payload = base64_encode(json_encode($data));
