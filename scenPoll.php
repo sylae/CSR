@@ -8,11 +8,40 @@
  */
 class scenPoll extends CSR {
 
+  /**
+   * Topic ID / Scenario ID
+   * @var int
+   */
   protected $tid;
+
+  /**
+   * Scenario title
+   * @var string
+   */
   protected $title;
+
+  /**
+   * Any tags given to the scenario
+   * @var array
+   */
   protected $tags;
+
+  /**
+   * Tokenized URL to connect to SW. Should ideally be in config instead
+   * @var string
+   */
   private $sw = "http://spiderwebforums.ipbhost.com/index.php?/topic/%s-/";
+
+  /**
+   * Raw HTML pulled from SW
+   * @var string
+   */
   private $html = false;
+
+  /**
+   * Map strings to BGASP consts and vice-versa
+   * @var array
+   */
   private $map = array(
     'Best' => B,
     'Good' => G,
@@ -24,7 +53,6 @@ class scenPoll extends CSR {
   /**
    * Constructor
    * 
-   * @global array $config Configuration Array
    * @param int $tid Topic ID to poll
    */
   function __construct($tid) {
@@ -35,6 +63,9 @@ class scenPoll extends CSR {
     $this->wipeDB();
   }
 
+  /**
+   * Grab the title of the scenario from the HTML
+   */
   function getTitle() {
     $this->title = htmlqp($this->html, '.ipsType_pagetitle')->text();
 
@@ -44,6 +75,13 @@ class scenPoll extends CSR {
     $this->db->exec($query);
   }
 
+  /**
+   * Wipe the database of any existing data
+   * 
+   * This prevents issues such as tags being removed. If we left
+   * the old data in and overwrite, we'd have a tag just laying
+   * around still.
+   */
   function wipeDB() {
     // topic
     $query = 'DELETE FROM topic WHERE tid='
@@ -59,6 +97,11 @@ class scenPoll extends CSR {
     $this->db->exec($query);
   }
 
+  /**
+   * Pull the HTML from SW
+   * 
+   * @return boolean false if the HTML has already been grabbed.
+   */
   function html() {
     if ($this->html) {
       return false;
@@ -113,7 +156,14 @@ class scenPoll extends CSR {
     return $totalscore;
   }
 
-  function _score($i) {
+  /**
+   * Figure out the "score" meant by a given word.
+   * We do this so that silly typos don't destroy all our hard work.
+   * 
+   * @param string $i String to check
+   * @return int The score detected, given as a BGASP const
+   */
+  private function _score($i) {
     $scores = array(
       'Best' => null,
       'Good' => null,
@@ -130,7 +180,13 @@ class scenPoll extends CSR {
     return $this->strToConst($c);
   }
 
-  function strToConst($str) {
+  /**
+   * Used by _score to map text to a const
+   * 
+   * @param string $str String input
+   * @return int BGASP const
+   */
+  private function strToConst($str) {
     foreach ($this->map as $k => $v) {
       if ($k == $str)
         return $v;
@@ -155,6 +211,9 @@ class scenPoll extends CSR {
     $this->db->extended->executeMultiple($sth, $postdata);
   }
 
+  /**
+   * Scan for tags and insert them into the db
+   */
   function getTags() {
     $alldata = array();
     foreach (htmlqp($this->html, 'a.ipsTag') as $item) {
