@@ -9,7 +9,19 @@ class CSR {
 
   private $config;
   private $db;
-  
+
+  /**
+   * Map strings to BGASP consts and vice-versa
+   * @var array
+   */
+  private $map = array(
+    'Best' => B,
+    'Good' => G,
+    'Average' => A,
+    'Substandard' => S,
+    'Poor' => P,
+  );
+
   function __construct() {
     global $config;
     $this->config = $config;

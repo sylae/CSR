@@ -42,18 +42,6 @@ class scenPoll extends CSR {
   private $html = false;
 
   /**
-   * Map strings to BGASP consts and vice-versa
-   * @var array
-   */
-  private $map = array(
-    'Best' => B,
-    'Good' => G,
-    'Average' => A,
-    'Substandard' => S,
-    'Poor' => P,
-  );
-
-  /**
    * Constructor
    * 
    * @param int $tid Topic ID to poll
@@ -180,19 +168,10 @@ class scenPoll extends CSR {
     arsort($scores);
     $s = reset($scores);
     $c = array_search($s, $scores);
-    return $this->strToConst($c);
-  }
-
-  /**
-   * Used by _score to map text to a const
-   * 
-   * @param string $str String input
-   * @return int BGASP const
-   */
-  private function strToConst($str) {
     foreach ($this->map as $k => $v) {
-      if ($k == $str)
+      if ($k == $c) {
         return $v;
+      }
     }
   }
 
@@ -205,7 +184,8 @@ class scenPoll extends CSR {
     var_dump($this->html);
     foreach (htmlqp($this->html, '#csr-rating') as $item) {
       $score = $this->_score($item->attr("data-csr-rating"));
-      if ($c = preg_match_all("/entry(\\d+)/is", $item->closest('.post_block')->children('a')->attr('id'), $matches)) {
+      $matches = array();
+      if (preg_match_all("/entry(\\d+)/is", $item->closest('.post_block')->children('a')->attr('id'), $matches)) {
         $c1 = $matches[1][0];
       }
       $postdata[] = array($c1, $this->tid, $score);
