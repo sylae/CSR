@@ -4,6 +4,7 @@
  * Populates the database with scenario data. The only class that should
  * be doing INSERTs or DELETEs.
  *
+ * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU General Public License 3
  * @author Sylae Jiendra Corell <sylae@calref.net>
  */
 class scenPoll extends CSR {
@@ -27,7 +28,9 @@ class scenPoll extends CSR {
   protected $tags;
 
   /**
-   * Tokenized URL to connect to SW. Should ideally be in config instead
+   * Tokenized URL to connect to SW.
+   * 
+   * @todo Move this over to $config
    * @var string
    */
   private $sw = "http://spiderwebforums.ipbhost.com/index.php?/topic/%s-/";
