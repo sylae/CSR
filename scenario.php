@@ -74,6 +74,8 @@ class scenario {
         . $this->db->quote($this->tid, 'integer') . ', '
         . $this->db->quote($this->title, 'text') . ')';
       $res = & $this->db->exec($query);
+      
+      // We'll also fetch info
     }
   }
 
@@ -191,6 +193,9 @@ class scenario {
     return (($r[B] + $r[G]) / $r['sum'] >= 0.3);
   }
 
+  /**
+   * Scan for ratings and insert them into the db
+   */
   function getRatings() {
     $postdata = array();
     $scores = array();
@@ -215,7 +220,12 @@ class scenario {
     //$sth = $db->prepare('INSERT INTO post (pid, tid, rating) VALUES (?, ?, ?)');
     //$db->extended->executeMultiple($sth, $postdata);
   }
-
+  
+  /**
+   * Generate a [composite] BBcode tag ready for injections into the post
+   * 
+   * @return string Payload ready for insertion
+   */
   function getPostPayload() {
     $data = array(
       'title' => $this->title,
@@ -223,7 +233,6 @@ class scenario {
       'tags' => $this->tags,
       'bgasp' => $this->bgasp,
     );
-    var_dump($data);
     $payload = base64_encode(json_encode($data));
     return '[composite=' . $payload . ']' . PHP_EOL . $this->bgaspBB() . PHP_EOL . '[/composite]';
   }
