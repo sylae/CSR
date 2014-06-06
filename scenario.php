@@ -11,21 +11,10 @@ class scenario extends CSR {
   public $title;
   public $tags;
   public $bgasp;
-  private $map = array(
-    'Best' => B,
-    'Good' => G,
-    'Average' => A,
-    'Substandard' => S,
-    'Poor' => P,
-  );
 
   function __construct($tid) {
-    global $config;
+    parent::__construct();
     $this->tid = $tid;
-    $this->config = $config;
-    $this->_setDB();
-
-    // Load or parse topic information
     $this->populateVars();
   }
 
@@ -34,6 +23,7 @@ class scenario extends CSR {
     $query = 'SELECT * FROM composite WHERE tid='
       . $this->db->quote($this->tid, 'integer') . ';';
     $res = & $this->db->query($query);
+
     if ($res->numRows() > 0) {
       $resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC);
       $bgasp = array(

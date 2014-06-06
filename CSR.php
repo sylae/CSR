@@ -7,14 +7,14 @@
  */
 class CSR {
 
-  private $config;
-  private $db;
+  public $config;
+  public $db;
 
   /**
    * Map strings to BGASP consts and vice-versa
    * @var array
    */
-  private $map = array(
+  public $map = array(
     'Best' => B,
     'Good' => G,
     'Average' => A,
