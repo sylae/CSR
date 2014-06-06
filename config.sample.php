@@ -8,6 +8,9 @@ $config['db'] = 'mysqli://user:password@localhost/database';
 $config['ipbUser'] = 'botname';
 $config['ipbPass'] = 'botpass';
 
+// Toggles a couple debugging features
+$config['debug'] = false;
+
 // Constants below here. Probably not wise to mess with them
 define('B', 5);
 define('G', 4);

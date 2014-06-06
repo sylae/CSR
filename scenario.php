@@ -198,14 +198,6 @@ class scenario {
    */
   function getRatings() {
     $postdata = array();
-    $scores = array();
-    $bgasp = array(
-      B => 0,
-      G => 0,
-      A => 0,
-      S => 0,
-      P => 0,
-    );
     $this->html();
     var_dump($this->html);
     foreach (htmlqp($this->html, '#csr-rating') as $item) {
@@ -213,12 +205,10 @@ class scenario {
       if ($c = preg_match_all("/entry(\\d+)/is", $item->closest('.post_block')->children('a')->attr('id'), $matches)) {
         $c1 = $matches[1][0];
       }
-      $scores[$c1] = $score;
-      $bgasp[$score] ++;
       $postdata[] = array($c1, $this->tid, $score);
     }
-    //$sth = $db->prepare('INSERT INTO post (pid, tid, rating) VALUES (?, ?, ?)');
-    //$db->extended->executeMultiple($sth, $postdata);
+    $sth = $this->db->prepare('INSERT INTO post (pid, tid, rating) VALUES (?, ?, ?)');
+    $this->db->extended->executeMultiple($sth, $postdata);
   }
   
   /**
@@ -233,7 +223,11 @@ class scenario {
       'tags' => $this->tags,
       'bgasp' => $this->bgasp,
     );
-    $payload = base64_encode(json_encode($data));
+    if ($config['debug']) {
+      $payload = base64_encode(json_encode($data, JSON_PRETTY_PRINT));
+    } else {
+      $payload = base64_encode(json_encode($data));
+    }
     return '[composite=' . $payload . ']' . PHP_EOL . $this->bgaspBB() . PHP_EOL . '[/composite]';
   }
 
