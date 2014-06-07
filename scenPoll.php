@@ -52,6 +52,9 @@ class scenPoll extends CSR {
     $this->html();
 
     $this->wipeDB();
+    $this->getTitle();
+    $this->getRatings();
+    $this->getTags();
   }
 
   /**
@@ -181,7 +184,6 @@ class scenPoll extends CSR {
   function getRatings() {
     $postdata = array();
     $this->html();
-    var_dump($this->html);
     foreach (htmlqp($this->html, '#csr-rating') as $item) {
       $score = $this->_score($item->attr("data-csr-rating"));
       $matches = array();
