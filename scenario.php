@@ -110,4 +110,16 @@ class scenario extends CSR {
     return '[composite=' . $payload . ']' . PHP_EOL . $this->bgaspBB() . PHP_EOL . '[/composite]';
   }
 
+  function updateOP() {
+    foreach (htmlqp(file_get_contents('http://spiderwebforums.ipbhost.com/index.php?/topic/' . $this->tid . '-/'), '#replyNumContainer') as $item) {
+      if ($item->attr("data-reply-num") == 1) {
+        $pid = $item->attr("data-pid");
+        $fid = $item->attr("data-fid");
+      }
+    }
+
+    $edit = new IPB($this->tid, $fid, $pid);
+    $edit->csrThread($this->getPostPayload());
+  }
+
 }
