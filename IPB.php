@@ -37,9 +37,11 @@ class IPB extends CSR {
       ->addPostParameter('auth_key', $auth)
       ->addPostParameter('ips_username', $this->config['ipbUser'])
       ->addPostParameter('ips_password', $this->config['ipbPass']);
+    
+    $this->l('Requesting SW Logon');
 
     $response = $request->send();
-
+    
     // TODO: Error checking
     // assume it works
     $this->cookies = $response->getCookies();
@@ -55,6 +57,8 @@ class IPB extends CSR {
     foreach ($this->cookies as $arCookie) {
       $edit->addCookie($arCookie['name'], $arCookie['value']);
     }
+    
+    $this->l('Requesting Edit for pid '.$this->pid);
 
     $response = $edit->send();
     $this->form = htmlqp($response->getBody());
@@ -65,6 +69,7 @@ class IPB extends CSR {
     preg_match('/"existingTags":\\[(.*?)\\]/', $this->form->html(), $matches);
     $this->tags = str_replace('"', '', $matches[1]);
     $this->edit = $this->_edit("IPB::csrThread");
+    $this->l('Edit type csrThread');
     $this->_submitEdit();
   }
   
@@ -73,12 +78,13 @@ class IPB extends CSR {
     preg_match('/"existingTags":\\[(.*?)\\]/', $this->form->html(), $matches);
     $this->tags = str_replace('"', '', $matches[1]);
     $this->edit = $this->_edit("IPB::csrAll");
+    $this->l('Edit type csrAll');
     $this->_submitEdit();
   }
   
   function _edit($w) {
-    $str = "Automated Sybot edit %s; worker %s";
-    return sprintf($str, date('c'), $w.'/'.php_uname('n'));
+    $str = "Automated Sybot edit; worker %s";
+    return sprintf($str, $w.'/'.php_uname('n'));
   }
 
   function _injectPayload($source, $payload) {
@@ -116,6 +122,7 @@ class IPB extends CSR {
     foreach ($this->cookies as $arCookie) {
       $send->addCookie($arCookie['name'], $arCookie['value']);
     }
+    $this->l('Submitting edit');
     $send->send();
   }
 

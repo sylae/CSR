@@ -67,6 +67,8 @@ class scenPoll extends CSR {
       . $this->db->quote($this->tid, 'integer') . ', '
       . $this->db->quote($this->title, 'text') . ')';
     $this->db->exec($query);
+
+    $this->l('Scenario: ' . $this->title);
   }
 
   /**
@@ -77,6 +79,7 @@ class scenPoll extends CSR {
    * around still.
    */
   function wipeDB() {
+    $this->l('Wiping all data for tid ' . $this->tid);
     // topic
     $query = 'DELETE FROM topic WHERE tid='
       . $this->db->quote($this->tid, 'integer') . ';';
@@ -102,6 +105,7 @@ class scenPoll extends CSR {
     }
 
     $this->html = file_get_contents(sprintf($this->sw, $this->tid));
+    $this->l('HTTP rec\'d for tid ' . $this->tid);
   }
 
   /**
@@ -191,6 +195,7 @@ class scenPoll extends CSR {
         $c1 = $matches[1][0];
       }
       $postdata[] = array($c1, $this->tid, $score);
+      $this->l('Found review: ' . $c1 . ' with rating ' . $score);
     }
     $sth = $this->db->prepare('INSERT INTO post (pid, tid, rating) VALUES (?, ?, ?)');
     $this->db->extended->executeMultiple($sth, $postdata);
@@ -204,6 +209,7 @@ class scenPoll extends CSR {
     foreach (htmlqp($this->html, 'a.ipsTag') as $item) {
       $t = trim(strtolower($item->text()));
       $alldata[] = array($this->tid, $t);
+      $this->l('Found tag: ' . $t);
     }
 
     $sth = $this->db->prepare('INSERT INTO tags (tid, tag) VALUES (?, ?)');

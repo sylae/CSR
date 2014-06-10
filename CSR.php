@@ -36,5 +36,11 @@ class CSR {
     }
     $this->db->loadModule('Extended', null, false);
   }
+  
+  function l($t) {
+    if ($this->config['debug']) {
+      echo '['.date('H:i:s').'] '.$t.PHP_EOL;
+    }
+  }
 
 }

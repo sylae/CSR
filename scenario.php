@@ -102,11 +102,7 @@ class scenario extends CSR {
       'tags' => $this->tags,
       'bgasp' => $this->bgasp,
     );
-    if ($this->config['debug']) {
-      $payload = base64_encode(json_encode($data, JSON_PRETTY_PRINT));
-    } else {
-      $payload = base64_encode(json_encode($data));
-    }
+    $payload = base64_encode(json_encode($data));
     return '[composite=' . $payload . ']' . PHP_EOL . $this->bgaspBB() . PHP_EOL . '[/composite]';
   }
 
