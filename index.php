@@ -6,15 +6,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU General Public License 3
  * @author Sylae Jiendra Corell <sylae@calref.net>
  */
-require 'config.php';
-require 'qp.php';
-require 'HTTP/Request2.php';
-require 'MDB2.php';
-
-require 'CSR.php';
-require 'scenario.php';
-require 'scenPoll.php';
-require 'IPB.php';
+require 'clases.php';
 
 // Currently a sandbox for testing.
 // TODO: Iterate over things, or something.
