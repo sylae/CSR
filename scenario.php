@@ -78,18 +78,6 @@ class scenario extends CSR {
     return $ret;
   }
 
-  function isTopScenario($r) {
-    return ($r[B] / $r['sum'] >= 0.3);
-  }
-
-  function isQualScenario($r) {
-    return (($r[B] + $r[G]) / $r['sum'] >= 0.75);
-  }
-
-  function isWorthScenario($r) {
-    return (($r[B] + $r[G]) / $r['sum'] >= 0.3);
-  }
-
   /**
    * Generate a [composite] BBcode tag ready for injections into the post
    * 
