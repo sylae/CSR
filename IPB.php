@@ -37,11 +37,11 @@ class IPB extends CSR {
       ->addPostParameter('auth_key', $auth)
       ->addPostParameter('ips_username', $this->config['ipbUser'])
       ->addPostParameter('ips_password', $this->config['ipbPass']);
-    
+
     $this->l('Requesting SW Logon');
 
     $response = $request->send();
-    
+
     // TODO: Error checking
     // assume it works
     $this->cookies = $response->getCookies();
@@ -57,34 +57,42 @@ class IPB extends CSR {
     foreach ($this->cookies as $arCookie) {
       $edit->addCookie($arCookie['name'], $arCookie['value']);
     }
-    
-    $this->l('Requesting Edit for pid '.$this->pid);
+
+    $this->l('Requesting Edit for pid ' . $this->pid);
 
     $response = $edit->send();
     $this->form = htmlqp($response->getBody());
   }
-  
+
   function csrThread($p) {
     $this->body = $this->_injectPayload(htmlqp($this->form, 'textarea[name=\'Post\']')->text(), $p);
     preg_match('/"existingTags":\\[(.*?)\\]/', $this->form->html(), $matches);
-    $this->tags = str_replace('"', '', $matches[1]);
+    if (array_key_exists(1, $matches)) {
+      $this->tags = str_replace('"', '', $matches[1]);
+    } else {
+      $this->tags = '';
+    }
     $this->edit = $this->_edit("IPB::csrThread");
     $this->l('Edit type csrThread');
     $this->_submitEdit();
   }
-  
+
   function csrAll($p) {
     $this->body = $p;
     preg_match('/"existingTags":\\[(.*?)\\]/', $this->form->html(), $matches);
-    $this->tags = str_replace('"', '', $matches[1]);
+    if (array_key_exists(1, $matches)) {
+      $this->tags = str_replace('"', '', $matches[1]);
+    } else {
+      $this->tags = '';
+    }
     $this->edit = $this->_edit("IPB::csrAll");
     $this->l('Edit type csrAll');
     $this->_submitEdit();
   }
-  
+
   function _edit($w) {
     $str = "Automated Sybot edit; worker %s";
-    return sprintf($str, $w.'/'.php_uname('n'));
+    return sprintf($str, $w . '/' . php_uname('n'));
   }
 
   function _injectPayload($source, $payload) {
@@ -92,7 +100,7 @@ class IPB extends CSR {
     if (preg_match('/(\\[composite=.*?\\].*?\\[\\/composite\\])/s', $source, $test)) {
       $ret = str_replace($test[1], $payload, $source);
     } elseif (preg_match('/(Composite Score.*)Keywords/s', $source, $test) || preg_match('/(Composite Score.*)/s', $source, $test)) {
-      $ret = str_replace($test[1], $payload.PHP_EOL.PHP_EOL, $source);
+      $ret = str_replace($test[1], $payload . PHP_EOL . PHP_EOL, $source);
     }
     return $ret;
   }

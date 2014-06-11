@@ -55,13 +55,40 @@ function byReviews($a, $b) {
   return ($sca < $scb) ? -1 : 1;
 }
 
+function generateList($list, $type = "reviews") {
+  $l = "[list]" . PHP_EOL;
+  foreach ($list as $e) {
+    switch ($type) {
+      case "reviews":
+        $l .= "[*][url=http://spiderwebforums.ipbhost.com/index.php?/topic/" .
+          $e['tid'] . "-/]" . $e['title'] . "[/url] [i][size=3]([b]" .
+          number_format($e['rating'], 1) . "[/b] with " . $e['reviews'] . " reviews)[/size][/i]" .
+          PHP_EOL;
+        break;
+      case "ratings":
+        $left = 5 - $e['reviews'];
+        $l .= "[*][url=http://spiderwebforums.ipbhost.com/index.php?/topic/" .
+          $e['tid'] . "-/]" . $e['title'] . "[/url] [i][size=3]([b]" .
+          $left . "[/b] " . (($left == 1) ? "review" : "reviews") . " needed)[/size][/i]" .
+          PHP_EOL;
+        break;
+    }
+  }
+
+  return $l . "[/list]";
+}
+
+function head($t, $d) {
+  return PHP_EOL . PHP_EOL . "[size=5][b]" . $t . "[/b][/size] [size=3]" . $d . "[/size]" . PHP_EOL;
+}
+
 function bestList($bgasp) {
   $list = array(
     'top' => isTopScenario($bgasp),
     'qual' => isQualScenario($bgasp),
     'worth' => isWorthScenario($bgasp),
   );
-  if ($bgasp['sum'] < 6)
+  if ($bgasp['sum'] < 5)
     return 'short';
   if ($list['top'])
     return 'top';
@@ -108,7 +135,8 @@ while (($resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC))) {
   }
   $list = bestList($bgasp);
   if ($list) {
-    $lists[$list][$resu['tid']] = array(
+    $lists[$list][] = array(
+      'tid' => $resu['tid'],
       'title' => $resu['title'],
       'rating' => $csr,
       'reviews' => $bgasp['sum'],
@@ -122,3 +150,24 @@ usort($lists['top'], "byScore");
 usort($lists['qual'], "byScore");
 usort($lists['worth'], "byScore");
 usort($lists['short'], "byReviews");
+
+$l = head("Top Scenarios", 'At least 30% of the reviews have rated "Best"');
+$l .= generateList($lists['top']);
+$l .= head("Quality Scenarios", 'At least 75% of the reviews have rated "Good" or higher.');
+$l .= generateList($lists['qual']);
+$l .= head("Worthwhile Scenarios", 'At least 30% of the reviews rated "Good" or higher.');
+$l .= generateList($lists['worth']);
+$l .= head("Unranked Scenarios", 'Less than 5 CSR reviews.');
+$l .= generateList($lists['short'], "ratings");
+
+$tid = 12213;
+
+foreach (htmlqp(file_get_contents('http://spiderwebforums.ipbhost.com/index.php?/topic/' . $tid . '-/'), '#replyNumContainer') as $item) {
+  if ($item->attr("data-reply-num") == 1) {
+    $pid = $item->attr("data-pid");
+    $fid = $item->attr("data-fid");
+  }
+}
+
+$edit = new IPB($tid, $fid, $pid);
+$edit->csrAll($l);
