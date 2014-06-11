@@ -8,6 +8,14 @@
  */
 require 'classes.php';
 
+$pts = array(
+  B => 5,
+  G => 4,
+  A => 3,
+  S => 2,
+  P => 1,
+);
+
 function isTopScenario($r) {
   if ($r['sum'] == 0) {
     return false;
@@ -29,16 +37,38 @@ function isWorthScenario($r) {
   return (($r[B] + $r[G]) / $r['sum'] >= 0.3);
 }
 
+function byScore($a, $b) {
+  $sca = $a['rating'];
+  $scb = $b['rating'];
+  if ($sca == $scb) {
+    return 0;
+  }
+  return ($sca > $scb) ? -1 : 1;
+}
+
+function byReviews($a, $b) {
+  $sca = $a['reviews'];
+  $scb = $b['reviews'];
+  if ($sca == $scb) {
+    return 0;
+  }
+  return ($sca < $scb) ? -1 : 1;
+}
+
 function bestList($bgasp) {
-  $bgasp['sum'] = array_sum($bgasp);
   $list = array(
     'top' => isTopScenario($bgasp),
     'qual' => isQualScenario($bgasp),
     'worth' => isWorthScenario($bgasp),
   );
-  if ($list['top']) return 'top';
-  if ($list['qual']) return 'qual';
-  if ($list['worth']) return 'worth';
+  if ($bgasp['sum'] < 6)
+    return 'short';
+  if ($list['top'])
+    return 'top';
+  if ($list['qual'])
+    return 'qual';
+  if ($list['worth'])
+    return 'worth';
   return false;
 }
 
@@ -55,6 +85,7 @@ $lists = array(
   'top' => array(),
   'qual' => array(),
   'worth' => array(),
+  'short' => array(),
 );
 
 while (($resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC))) {
@@ -65,9 +96,31 @@ while (($resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC))) {
     S => (int) $resu['s'],
     P => (int) $resu['p'],
   );
+  $val = 0;
+  foreach ($bgasp as $cat => $num) {
+    $val += $num * $pts[$cat];
+  }
+  $bgasp['sum'] = array_sum($bgasp);
+  if ($bgasp['sum'] == 0) {
+    $csr = 0;
+  } else {
+    $csr = $val / $bgasp['sum'];
+  }
   $list = bestList($bgasp);
   if ($list) {
-    $lists[$list][$resu['tid']] = $resu['title'];
+    $lists[$list][$resu['tid']] = array(
+      'title' => $resu['title'],
+      'rating' => $csr,
+      'reviews' => $bgasp['sum'],
+    );
   }
 }
+
+
+// sort the lists
+usort($lists['top'], "byScore");
+usort($lists['qual'], "byScore");
+usort($lists['worth'], "byScore");
+usort($lists['short'], "byReviews");
+
 print_r($lists);
