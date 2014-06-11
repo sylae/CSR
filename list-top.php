@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Description here
+ * Generates and updates the List of Scenarios
  *
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU General Public License 3
  * @author Sylae Jiendra Corell <sylae@calref.net>
@@ -122,5 +122,3 @@ usort($lists['top'], "byScore");
 usort($lists['qual'], "byScore");
 usort($lists['worth'], "byScore");
 usort($lists['short'], "byReviews");
-
-print_r($lists);
