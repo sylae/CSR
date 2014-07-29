@@ -111,6 +111,7 @@ class IPB extends CSR {
     $send->setMethod(HTTP_Request2::METHOD_POST)
       ->setConfig('follow_redirects', true)
       ->addPostParameter('add_edit', 1)
+      ->addPostParameter('enablesig', 'yes')
       ->addPostParameter('post_edit_reason', $this->edit)
       ->addPostParameter('TopicTitle', htmlqp($this->form, '#topic_title')->attr('value'))
       ->addPostParameter('ipsTags', $this->tags)
