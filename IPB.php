@@ -25,12 +25,12 @@ class IPB extends CSR {
   }
 
   function _login() {
-    $url = "http://spiderwebforums.ipbhost.com/index.php?app=core&module=global&section=login";
+    $url = $this->config['ipbURL'] . "app=core&module=global&section=login";
     $html = file_get_contents($url);
 
     $auth = htmlqp($html, 'input[name=\'auth_key\']')->attr("value");
 
-    $request = new HTTP_Request2('http://spiderwebforums.ipbhost.com/index.php?app=core&module=global&section=login&do=process');
+    $request = new HTTP_Request2($this->config['ipbURL'] . 'app=core&module=global&section=login&do=process');
     $request->setMethod(HTTP_Request2::METHOD_POST)
       ->setConfig('follow_redirects', true)
       ->setCookieJar()
@@ -49,8 +49,9 @@ class IPB extends CSR {
   }
 
   function _editForm() {
-    $edit = new HTTP_Request2(
-      sprintf('http://spiderwebforums.ipbhost.com/index.php?app=forums&module=post&section=post&do=edit_post&f=%s&t=%s&p=%s&st=', $this->fid, $this->tid, $this->pid));
+    $edit = new HTTP_Request2(sprintf(
+        $this->config['ipbURL'] . 'app=forums&module=post&section=post&do=edit_post&f=%s&t=%s&p=%s&st=', $this->fid, $this->tid, $this->pid
+    ));
     $edit->setMethod(HTTP_Request2::METHOD_GET)
       ->setConfig('follow_redirects', true);
 
@@ -106,7 +107,7 @@ class IPB extends CSR {
   }
 
   function _submitEdit() {
-    $send = new HTTP_Request2('http://spiderwebforums.ipbhost.com/index.php?');
+    $send = new HTTP_Request2($this->config['ipbURL']);
     $send->setMethod(HTTP_Request2::METHOD_POST)
       ->setConfig('follow_redirects', true)
       ->addPostParameter('add_edit', 1)

@@ -7,6 +7,7 @@ $config['db'] = 'mysqli://user:password@localhost/database';
 // IPB posting credentials.
 $config['ipbUser'] = 'botname';
 $config['ipbPass'] = 'botpass';
+$config['ipbURL']  = 'http://spiderwebforums.ipbhost.com/index.php?';
 
 // Toggles a couple debugging features
 $config['debug'] = false;

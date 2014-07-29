@@ -28,14 +28,6 @@ class scenPoll extends CSR {
   protected $tags;
 
   /**
-   * Tokenized URL to connect to SW.
-   * 
-   * @todo Move this over to $config
-   * @var string
-   */
-  private $sw = "http://spiderwebforums.ipbhost.com/index.php?/topic/%s-/";
-
-  /**
    * Raw HTML pulled from SW
    * @var string
    */
@@ -104,7 +96,7 @@ class scenPoll extends CSR {
       return false;
     }
 
-    $this->html = file_get_contents(sprintf($this->sw, $this->tid));
+    $this->html = file_get_contents(sprintf($this->config['ipbURL']."/topic/%s-/", $this->tid));
     $this->l('HTTP rec\'d for tid ' . $this->tid);
   }
 

@@ -7,97 +7,7 @@
  * @author Sylae Jiendra Corell <sylae@calref.net>
  */
 require 'classes.php';
-
-$pts = array(
-  B => 5,
-  G => 4,
-  A => 3,
-  S => 2,
-  P => 1,
-);
-
-function isTopScenario($r) {
-  if ($r['sum'] == 0) {
-    return false;
-  }
-  return ($r[B] / $r['sum'] >= 0.3);
-}
-
-function isQualScenario($r) {
-  if ($r['sum'] == 0) {
-    return false;
-  }
-  return (($r[B] + $r[G]) / $r['sum'] >= 0.75);
-}
-
-function isWorthScenario($r) {
-  if ($r['sum'] == 0) {
-    return false;
-  }
-  return (($r[B] + $r[G]) / $r['sum'] >= 0.3);
-}
-
-function byScore($a, $b) {
-  $sca = $a['rating'];
-  $scb = $b['rating'];
-  if ($sca == $scb) {
-    return 0;
-  }
-  return ($sca > $scb) ? -1 : 1;
-}
-
-function byReviews($a, $b) {
-  $sca = $a['reviews'];
-  $scb = $b['reviews'];
-  if ($sca == $scb) {
-    return 0;
-  }
-  return ($sca < $scb) ? -1 : 1;
-}
-
-function generateList($list, $type = "reviews") {
-  $l = "[list]" . PHP_EOL;
-  foreach ($list as $e) {
-    switch ($type) {
-      case "reviews":
-        $l .= "[*][url=http://spiderwebforums.ipbhost.com/index.php?/topic/" .
-          $e['tid'] . "-/]" . $e['title'] . "[/url] [i][size=3]([b]" .
-          number_format($e['rating'], 1) . "[/b] with " . $e['reviews'] . " reviews)[/size][/i]" .
-          PHP_EOL;
-        break;
-      case "ratings":
-        $left = 5 - $e['reviews'];
-        $l .= "[*][url=http://spiderwebforums.ipbhost.com/index.php?/topic/" .
-          $e['tid'] . "-/]" . $e['title'] . "[/url] [i][size=3]([b]" .
-          $left . "[/b] " . (($left == 1) ? "review" : "reviews") . " needed)[/size][/i]" .
-          PHP_EOL;
-        break;
-    }
-  }
-
-  return $l . "[/list]";
-}
-
-function head($t, $d) {
-  return PHP_EOL . PHP_EOL . "[size=5][b]" . $t . "[/b][/size] [size=3]" . $d . "[/size]" . PHP_EOL;
-}
-
-function bestList($bgasp) {
-  $list = array(
-    'top' => isTopScenario($bgasp),
-    'qual' => isQualScenario($bgasp),
-    'worth' => isWorthScenario($bgasp),
-  );
-  if ($bgasp['sum'] < 5)
-    return 'short';
-  if ($list['top'])
-    return 'top';
-  if ($list['qual'])
-    return 'qual';
-  if ($list['worth'])
-    return 'worth';
-  return false;
-}
+require 'list-top.inc';
 
 $db = & MDB2::singleton($config['db']);
 if (PEAR::isError($db)) {
@@ -162,7 +72,7 @@ $l .= generateList($lists['short'], "ratings");
 
 $tid = 20609;
 
-foreach (htmlqp(file_get_contents('http://spiderwebforums.ipbhost.com/index.php?/topic/' . $tid . '-/'), '#replyNumContainer') as $item) {
+foreach (htmlqp(file_get_contents($config['ipbURL'].'/topic/' . $tid . '-/'), '#replyNumContainer') as $item) {
   if ($item->attr("data-reply-num") == 1) {
     $pid = $item->attr("data-pid");
     $fid = $item->attr("data-fid");
