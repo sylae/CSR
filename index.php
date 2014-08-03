@@ -10,7 +10,7 @@ require 'classes.php';
 
 // Currently a sandbox for testing.
 // TODO: Iterate over things, or something.
-$scen = 12307;
-$poll = new scenPoll($scen);
-$csr = new scenario($scen);
-$csr->updateOP();
+$scen = array(15667, 15659, 15676, 15675, 15671, 14150);
+foreach ($scen as $s) {
+  $poll = new scenPoll($s);
+}

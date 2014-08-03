@@ -7,7 +7,7 @@
  * @author Sylae Jiendra Corell <sylae@calref.net>
  */
 require 'classes.php';
-require 'list-top.inc';
+require 'list.inc';
 
 $db = & MDB2::singleton($config['db']);
 if (PEAR::isError($db)) {

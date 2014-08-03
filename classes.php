@@ -16,7 +16,7 @@ require 'HTTP/Request2.php';
 require 'MDB2.php';
 
 // Local classes
-require 'CSR.php';
-require 'scenario.php';
-require 'scenPoll.php';
-require 'IPB.php';
+require 'classes/CSR.php';
+require 'classes/scenario.php';
+require 'classes/scenPoll.php';
+require 'classes/IPB.php';

@@ -28,6 +28,24 @@ class scenPoll extends CSR {
   protected $tags;
 
   /**
+   * Download URL for Mac scenario
+   * @var string
+   */
+  protected $dlMac;
+
+  /**
+   * Download URL for Windows scenario
+   * @var string
+   */
+  protected $dlWin;
+
+  /**
+   * Scenario Author
+   * @var string
+   */
+  protected $author;
+
+  /**
    * Raw HTML pulled from SW
    * @var string
    */
@@ -44,7 +62,7 @@ class scenPoll extends CSR {
     $this->html();
 
     $this->wipeDB();
-    $this->getTitle();
+    $this->getTitleMisc();
     $this->getRatings();
     $this->getTags();
   }
@@ -52,12 +70,27 @@ class scenPoll extends CSR {
   /**
    * Grab the title of the scenario from the HTML
    */
-  function getTitle() {
+  function getTitleMisc() {
     $this->title = htmlqp($this->html, '.ipsType_pagetitle')->text();
 
-    $query = 'INSERT INTO topic (tid, title) VALUES ('
+    foreach (htmlqp($this->html, '.post_body') as $item) {
+      if (htmlqp($item, '#replyNumContainer')->attr("data-reply-num") == 1) {
+        $this->_getDLLinks($item);
+        preg_match('/Author: (.*)/', $item->text(), $matches);
+        if (array_key_exists(1, $matches)) {
+          $this->author = $matches[1];
+          $aid = $this->_getAuthorID($this->author);
+          $this->l("Author: ".$this->author.' (aid '.$aid.')');
+        }
+      }
+    }
+
+    $query = 'INSERT INTO topic (tid, title, dlWin, dlMac, author) VALUES ('
       . $this->db->quote($this->tid, 'integer') . ', '
-      . $this->db->quote($this->title, 'text') . ')';
+      . $this->db->quote($this->title, 'text') . ', '
+      . $this->db->quote($this->dlWin, 'text') . ', '
+      . $this->db->quote($this->dlMac, 'text') . ', '
+      . $this->db->quote($aid, 'integer') . ')';
     $this->db->exec($query);
 
     $this->l('Scenario: ' . $this->title);
@@ -77,7 +110,7 @@ class scenPoll extends CSR {
       . $this->db->quote($this->tid, 'integer') . ';';
     $this->db->exec($query);
     // tags
-    $query = 'DELETE FROM tag WHERE tid='
+    $query = 'DELETE FROM tags WHERE tid='
       . $this->db->quote($this->tid, 'integer') . ';';
     $this->db->exec($query);
     // post
@@ -96,7 +129,7 @@ class scenPoll extends CSR {
       return false;
     }
 
-    $this->html = file_get_contents(sprintf($this->config['ipbURL']."/topic/%s-/", $this->tid));
+    $this->html = file_get_contents(sprintf($this->config['ipbURL'] . "/topic/%s-/", $this->tid));
     $this->l('HTTP rec\'d for tid ' . $this->tid);
   }
 
@@ -200,12 +233,46 @@ class scenPoll extends CSR {
     $alldata = array();
     foreach (htmlqp($this->html, 'a.ipsTag') as $item) {
       $t = trim(strtolower($item->text()));
+      $this->tags[] = $t;
       $alldata[] = array($this->tid, $t);
       $this->l('Found tag: ' . $t);
     }
 
     $sth = $this->db->prepare('INSERT INTO tags (tid, tag) VALUES (?, ?)');
     $this->db->extended->executeMultiple($sth, $alldata);
+  }
+
+  function _getAuthorID($name) {
+    $query = 'SELECT * FROM author WHERE name='
+      . $this->db->quote($name, 'text') . ';';
+    $res = & $this->db->query($query);
+
+    if ($res->numRows() > 0) {
+      $resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC);
+      return (int) $resu['aid'];
+    } else {
+      $query = 'INSERT INTO author (name) VALUES ('
+        . $this->db->quote($name, 'text') . ')';
+      $this->db->exec($query);
+      return $this->_getAuthorID($name);
+    }
+  }
+
+  /**
+   * Helper function to get the download links
+   * @param type $item
+   */
+  function _getDLLinks($item) {
+    foreach (htmlqp($item, 'a') as $link) {
+      if ($link->text() == "Mac") {
+        $this->dlMac = $link->attr("href");
+        $this->l("Mac DL: ".$this->dlMac);
+      }
+      if ($link->text() == "Windows") {
+        $this->dlWin = $link->attr("href");
+        $this->l("Win DL: ".$this->dlWin);
+      }
+    }
   }
 
 }
