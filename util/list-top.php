@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU General Public License 3
  * @author Sylae Jiendra Corell <sylae@calref.net>
  */
-require 'classes.php';
+require __DIR__.'/../classes.php';
 require 'list.inc';
 
 $db = & MDB2::singleton($config['db']);
