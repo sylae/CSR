@@ -11,7 +11,7 @@
 require 'config.php';
 
 // Libraries
-require 'qp.php';
+require 'QueryPath/QueryPath.php';
 require 'HTTP/Request2.php';
 require 'MDB2.php';
 
