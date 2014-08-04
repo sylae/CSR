@@ -69,7 +69,7 @@ $l .= head("Worthwhile Scenarios", 'At least 30% of the reviews rated "Good" or 
 $l .= generateList($lists['worth']);
 $l .= head("Unranked Scenarios", 'Less than 5 CSR reviews.');
 $l .= generateList($lists['short'], "ratings");
-
+$l .= '[encouragenecro]';
 $tid = 20609;
 
 foreach (htmlqp(file_get_contents($config['ipbURL'].'/topic/' . $tid . '-/'), '#replyNumContainer') as $item) {

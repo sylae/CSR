@@ -47,6 +47,8 @@ foreach ($l as $name => $scens) {
   $t.= '[/list]'.PHP_EOL;
 }
 
+$t.= '[encouragenecro]'.PHP_EOL;
+
 $tid = 20748;
 
 foreach (htmlqp(file_get_contents($config['ipbURL'].'/topic/' . $tid . '-/'), '#replyNumContainer') as $item) {

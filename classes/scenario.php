@@ -76,6 +76,7 @@ class scenario extends CSR {
     foreach ($this->bgasp as $cat => $num) {
       $ret .= $this->ConstToStr($cat) . ": [b]" . number_format($pct[$cat] * 100, 2) . "%[/b] [i](" . $num . "/" . $tot . ")[/i]" . PHP_EOL;
     }
+    $ret .= '[encouragenecro]'.PHP_EOL;
     return $ret;
   }
 
