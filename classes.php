@@ -11,7 +11,7 @@
 require 'config.php';
 
 // Libraries
-require 'QueryPath/QueryPath.php';
+require 'qp.php'; // don't fall for that 2.x crap.
 require 'HTTP/Request2.php';
 require 'MDB2.php';
 
