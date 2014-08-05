@@ -22,11 +22,14 @@ $s = array();
 $l = array();
 while (($resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC))) {
   $s[$resu['tid']] = $resu['title'];
-  if (array_key_exists($resu['author'], $l)) {
-    $l[$resu['author']][] = $resu['tid'];
-  } else {
-    $l[$resu['author']] = array();
-    $l[$resu['author']][] = $resu['tid'];
+  $authors_array = explode(", ", $resu['author']);
+  foreach ($authors_array as $author) {
+    if (array_key_exists($author, $l)) {
+      $l[$author][] = $resu['tid'];
+    } else {
+      $l[$author] = array();
+      $l[$author][] = $resu['tid'];
+    }
   }
 }
 ksort($l, SORT_NATURAL | SORT_FLAG_CASE);

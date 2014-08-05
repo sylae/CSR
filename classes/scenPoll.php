@@ -41,7 +41,7 @@ class scenPoll extends CSR {
 
   /**
    * Scenario Author
-   * @var string
+   * @var array
    */
   protected $author;
 
@@ -78,19 +78,22 @@ class scenPoll extends CSR {
         $this->_getDLLinks($item);
         preg_match('/Author: (.*)/', $item->text(), $matches);
         if (array_key_exists(1, $matches)) {
-          $this->author = $matches[1];
-          $aid = $this->_getAuthorID($this->author);
-          $this->l("Author: ".$this->author.' (aid '.$aid.')');
+          $this->author = explode(", ", $matches[1]);
+          foreach ($this->author as $a) {
+            $aid = $this->_getAuthorID($a);
+            $this->l("Author: ".$a.' (aid '.$aid.')');
+          }
         }
       }
     }
 
-    $query = 'INSERT INTO topic (tid, title, dlWin, dlMac, author) VALUES ('
+    $this->_addAuthorRels();
+
+    $query = 'INSERT INTO topic (tid, title, dlWin, dlMac) VALUES ('
       . $this->db->quote($this->tid, 'integer') . ', '
       . $this->db->quote($this->title, 'text') . ', '
       . $this->db->quote($this->dlWin, 'text') . ', '
-      . $this->db->quote($this->dlMac, 'text') . ', '
-      . $this->db->quote($aid, 'integer') . ')';
+      . $this->db->quote($this->dlMac, 'text') . ')';
     $this->db->exec($query);
 
     $this->l('Scenario: ' . $this->title);
@@ -115,6 +118,10 @@ class scenPoll extends CSR {
     $this->db->exec($query);
     // post
     $query = 'DELETE FROM post WHERE tid='
+      . $this->db->quote($this->tid, 'integer') . ';';
+    $this->db->exec($query);
+    // topic_author
+    $query = 'DELETE FROM topic_author WHERE topic='
       . $this->db->quote($this->tid, 'integer') . ';';
     $this->db->exec($query);
   }
@@ -239,6 +246,15 @@ class scenPoll extends CSR {
     }
 
     $sth = $this->db->prepare('INSERT INTO tags (tid, tag) VALUES (?, ?)');
+    $this->db->extended->executeMultiple($sth, $alldata);
+  }
+
+  function _addAuthorRels() {
+    $alldata = array();
+    foreach ($this->author as $a) {
+      $alldata[] = array($this->tid, $this->_getAuthorID($a));
+    }
+    $sth = $this->db->prepare('INSERT INTO topic_author (topic, author) VALUES (?, ?)');
     $this->db->extended->executeMultiple($sth, $alldata);
   }
 
