@@ -70,9 +70,8 @@ $l .= generateList($lists['worth']);
 $l .= head("Unranked Scenarios", 'Less than 5 CSR reviews.');
 $l .= generateList($lists['short'], "ratings");
 $l .= '[encouragenecro]';
-$tid = 20609;
 
-foreach (htmlqp(file_get_contents($config['ipbURL'].'/topic/' . $tid . '-/'), '#replyNumContainer') as $item) {
+foreach (htmlqp(file_get_contents($config['ipbURL'].'/topic/' . $config['topics']['top'] . '-/'), '#replyNumContainer') as $item) {
   if ($item->attr("data-reply-num") == 1) {
     $pid = $item->attr("data-pid");
     $fid = $item->attr("data-fid");

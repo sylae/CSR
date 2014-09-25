@@ -12,6 +12,11 @@ $config['ipbURL']  = 'http://spiderwebforums.ipbhost.com/index.php?';
 // Toggles a couple debugging features
 $config['debug'] = false;
 
+// List topics
+$config['topics'] = array();
+$config['topics']['auth'] = 20748;
+$config['topics']['top']  = 20609;
+
 // Constants below here. Probably not wise to mess with them
 define('B', 5);
 define('G', 4);

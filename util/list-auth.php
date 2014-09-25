@@ -52,9 +52,7 @@ foreach ($l as $name => $scens) {
 
 $t.= '[encouragenecro]'.PHP_EOL;
 
-$tid = 20748;
-
-foreach (htmlqp(file_get_contents($config['ipbURL'].'/topic/' . $tid . '-/'), '#replyNumContainer') as $item) {
+foreach (htmlqp(file_get_contents($config['ipbURL'].'/topic/' . $config['topics']['auth'] . '-/'), '#replyNumContainer') as $item) {
   if ($item->attr("data-reply-num") == 1) {
     $pid = $item->attr("data-pid");
     $fid = $item->attr("data-fid");
