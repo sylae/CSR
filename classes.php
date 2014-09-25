@@ -20,3 +20,7 @@ require 'classes/CSR.php';
 require 'classes/scenario.php';
 require 'classes/scenPoll.php';
 require 'classes/IPB.php';
+
+// queries
+require 'classes/queryCSR.php';
+require 'classes/queryUnranked.php';
