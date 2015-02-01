@@ -1,0 +1,6 @@
+[submodule "libs/ext/jquery-release"]
+	path = libs/ext/jquery-release
+	url = https://github.com/cburschka/jquery-release.git
+[submodule "libs/ext/bootstrap"]
+	path = libs/ext/bootstrap
+	url = https://github.com/twbs/bootstrap.git
