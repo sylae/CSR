@@ -15,6 +15,9 @@ require 'qp.php'; // don't fall for that 2.x crap.
 require 'HTTP/Request2.php';
 require 'MDB2.php';
 
+// Local libraries
+require 'libs/misc.php';
+
 // Local classes
 require 'classes/CSR.php';
 require 'classes/scenario.php';

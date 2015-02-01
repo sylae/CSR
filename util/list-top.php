@@ -8,6 +8,7 @@
  */
 require __DIR__.'/../classes.php';
 require 'list.inc';
+ensure_console();
 
 $db = & MDB2::singleton($config['db']);
 if (PEAR::isError($db)) {
