@@ -12,6 +12,7 @@ class scenario extends CSR {
   public $title;
   public $tags;
   public $bgasp;
+  public $author = array();
 
   function __construct($tid) {
     parent::__construct();
@@ -42,6 +43,15 @@ class scenario extends CSR {
       $this->title = $resu['title'];
       $this->tags = $tag;
       $this->bgasp = $bgasp;
+      
+      // build authorship
+      $query = 'SELECT * FROM topic_author join author on topic_author.author = author.aid WHERE topic='
+        . $this->db->quote($this->tid, 'integer') . ';';
+      $res = & $this->db->query($query);
+      while (($resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC))) {
+        $this->author[$resu['aid']] = $resu['name'];
+      }
+      
     } else {
       // TODO: Impliment scenPoll
     }

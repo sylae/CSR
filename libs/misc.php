@@ -17,3 +17,13 @@ function ensure_console() {
     die("This file cannot be called directly.");
   }
 }
+
+function login_blurb() {
+  global $context;
+  if ($context['logged']) {
+    echo '<li><a href="./?p=control">Control Room</a></li>
+            <li><a>Welcome ' . $context['name'] . ' <img src="http://spiderwebforums.ipbhost.com/uploads/profile/photo-' . $context['sw_id'] . '.png" alt="" style="max-height:22px;"/></a></li>';
+  } else {
+    echo '<li><a href="./?p=auth">Log in</a></li>';
+  }
+}
