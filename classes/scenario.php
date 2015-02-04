@@ -7,7 +7,7 @@
  * @author Sylae Jiendra Corell <sylae@calref.net>
  */
 class scenario extends CSR {
-
+  public $exists=true;
   public $tid;
   public $title;
   public $tags;
@@ -63,7 +63,7 @@ class scenario extends CSR {
         $this->dlMac = $resu['mac'];
       }
     } else {
-      // TODO: Impliment scenPoll
+      $this->exists = false;
     }
   }
 

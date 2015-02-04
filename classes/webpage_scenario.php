@@ -12,6 +12,11 @@ class webpage_scenario extends webpage {
     $tid = (array_key_exists('tid', $_GET) ? (int) $_GET['tid'] : null);
     if ($tid) {
       $scen = new scenario($tid);
+    } else {
+      // LIST OF SCENARIOS
+      return "Scenario list here"; // TODO
+    }
+    if ($scen->exists) {
       $this->setTitle($scen->title);
 
       // Tags
