@@ -8,9 +8,8 @@
 require 'classes.php';
 
 $page = preg_replace("/[^[:alnum:]]/ui", '', (array_key_exists('p', $_GET) ? $_GET['p'] : 'front'));
-$c = 'webpage_'.$page;
+$c = 'webpage_' . $page;
 $c = new $c;
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -48,7 +47,11 @@ $c = new $c;
       </div>
     </nav>
     <div class="container">
-      <?php echo $c->html; ?>
+      <div class="row">
+        <div class="col-md-12">
+          <?php echo $c->html; ?>
+        </div>
+      </div>
     </div>
   </body>
 </html>
