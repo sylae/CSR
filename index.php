@@ -19,6 +19,11 @@ $c = new $c;
     <script src="libs/ext/jquery-release/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <link href="libs/ext/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="libs/ext/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+      $(function() {
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
   </head>
   <body>
 
