@@ -13,6 +13,8 @@ class scenario extends CSR {
   public $tags;
   public $bgasp;
   public $author = array();
+  public $dlWin;
+  public $dlMac;
 
   function __construct($tid) {
     parent::__construct();
@@ -52,6 +54,14 @@ class scenario extends CSR {
         $this->author[$resu['aid']] = $resu['name'];
       }
       
+      // build downloads
+      $query = 'SELECT dlWin as win, dlMac as mac FROM topic WHERE tid='
+        . $this->db->quote($this->tid, 'integer') . ';';
+      $res = & $this->db->query($query);
+      while (($resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC))) {
+        $this->dlWin = $resu['win'];
+        $this->dlMac = $resu['mac'];
+      }
     } else {
       // TODO: Impliment scenPoll
     }
