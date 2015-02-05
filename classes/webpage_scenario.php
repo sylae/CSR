@@ -14,7 +14,7 @@ class webpage_scenario extends webpage {
       $scen = new scenario($tid);
     } else {
       // LIST OF SCENARIOS
-      return "Scenario list here"; // TODO
+      return $this->_buildScenarioList();
     }
     if ($scen->exists) {
       $this->setTitle($scen->title);
@@ -83,6 +83,84 @@ EOT;
       $this->setTitle("Scenario not found");
       return "<p>You must specify a scenario to be selected.</p>";
     }
+  }
+
+  private function _buildScenarioList() {
+    $pts = array(
+      B => 5,
+      G => 4,
+      A => 3,
+      S => 2,
+      P => 1,
+    );
+    $query = 'SELECT * FROM composite;';
+    $res = & $this->db->query($query);
+    $scens = array();
+    while (($resu = $res->fetchRow(MDB2_FETCHMODE_ASSOC))) {
+      $bgasp = array(
+        B => (int) $resu['b'],
+        G => (int) $resu['g'],
+        A => (int) $resu['a'],
+        S => (int) $resu['s'],
+        P => (int) $resu['p'],
+      );
+      $val = 0;
+      foreach ($bgasp as $cat => $num) {
+        $val += $num * $pts[$cat];
+      }
+      $sum = array_sum($bgasp);
+      if ($sum == 0) {
+        $csr = 0;
+      } else {
+        $csr = $val / $sum;
+      }
+      $scens[] = array(
+        'tid' => $resu['tid'],
+        'title' => $resu['title'],
+        'author' => $resu['author'],
+        'rating' => $csr,
+        'reviews' => $sum,
+        'bgasp' => $bgasp,
+      );
+    }
+
+    $r = <<< EOT
+        	<div class="row">
+		<div class="col-md-12 column">
+			<h3>Scenarios</h3>
+      <table class="table table-condensed">
+        <tr>
+          <th>Scenario</th>
+          <th colspan="2">Rating</th>
+        </tr>
+EOT;
+    usort($scens, "webpage_scenario::_sortByScore");
+    foreach ($scens as $d => $payload) {
+      $bar = $this->buildBGBar($payload['bgasp']);
+      $r.= "<tr><td><a href=\".?p=scenario&tid=" . $payload['tid'] . "\">" .
+        $payload['title'] . "</a><br /><small><em>By ".$payload['author']."</em></small></td><td><strong>" . number_format($payload['rating'], 1) .
+        "</strong><small>/5.0</small> with " . $payload['reviews'] . (($payload['reviews']==1) ? " review" : " reviews") . $bar . "</td></tr>";
+    }
+    $r.= <<< EOT
+      </table>
+		</div>
+	</div>
+EOT;
+    return $r;
+  }
+
+  private function _sortByScore($a, $b) {
+    $sca = $a['rating'];
+    $scb = $b['rating'];
+    $na = $a['reviews'];
+    $nb = $b['reviews'];
+    if ($sca == $scb) {
+      if ($na == $nb) {
+        return 0;
+      }
+      return ($na > $nb) ? -1 : 1;
+    }
+    return ($sca > $scb) ? -1 : 1;
   }
 
 }
