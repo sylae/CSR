@@ -43,19 +43,25 @@ class webpage extends CSR {
 
   protected function buildBGBar($bgasp) {
     $pct = array();
+    $pf = array();
     $tot = array_sum($bgasp);
     foreach ($bgasp as $cat => $num) {
-      $pct[$cat] = $num / $tot * 100;
+      $pct[$cat] = ($tot != 0) ? $num / $tot * 100 : 0; // DO NOT ROUND OR THIS WILL GET FUCKED
+      $pf[$cat] = number_format($pct[$cat], 2); // use this for labels.
     }
-    $bgaspbar = <<<EOT
-<div class="progress">
-<div class="progress-bar" style="width:{$pct[P]}%;background-color:#c00000;color:#333" data-toggle="tooltip" data-placement="bottom" title="Poor: {$pct[P]}%">{$bgasp[P]}</div>
-<div class="progress-bar" style="width:{$pct[S]}%;background-color:#ed7d31;color:#333" data-toggle="tooltip" data-placement="bottom" title="Substandard: {$pct[S]}%">{$bgasp[S]}</div>
-<div class="progress-bar" style="width:{$pct[A]}%;background-color:#ffc000;color:#333" data-toggle="tooltip" data-placement="bottom" title="Average: {$pct[A]}%">{$bgasp[A]}</div>
-<div class="progress-bar" style="width:{$pct[G]}%;background-color:#92d050;color:#333" data-toggle="tooltip" data-placement="bottom" title="Good: {$pct[G]}%">{$bgasp[G]}</div>
-<div class="progress-bar" style="width:{$pct[B]}%;background-color:#00b0f0;color:#333" data-toggle="tooltip" data-placement="bottom" title="Best: {$pct[B]}%">{$bgasp[B]}</div>
-</div>        
+    if ($tot == 0) {
+      $bgaspbar = '<div class="progress"><div class="progress-bar" style="width:100%;background-color:#aaa;color:#333"">Unrated</div>';
+    } else {
+      $bgaspbar = <<<EOT
+<div class="progress" style="min-width:8em;">
+<div class="progress-bar" style="width:{$pct[P]}%;background-color:#c00000;color:#333" data-toggle="tooltip" data-placement="bottom" title="Poor: {$pf[P]}%">{$bgasp[P]}</div>
+<div class="progress-bar" style="width:{$pct[S]}%;background-color:#ed7d31;color:#333" data-toggle="tooltip" data-placement="bottom" title="Substandard: {$pf[S]}%">{$bgasp[S]}</div>
+<div class="progress-bar" style="width:{$pct[A]}%;background-color:#ffc000;color:#333" data-toggle="tooltip" data-placement="bottom" title="Average: {$pf[A]}%">{$bgasp[A]}</div>
+<div class="progress-bar" style="width:{$pct[G]}%;background-color:#92d050;color:#333" data-toggle="tooltip" data-placement="bottom" title="Good: {$pf[G]}%">{$bgasp[G]}</div>
+<div class="progress-bar" style="width:{$pct[B]}%;background-color:#00b0f0;color:#333" data-toggle="tooltip" data-placement="bottom" title="Best: {$pf[B]}%">{$bgasp[B]}</div>
+</div>
 EOT;
+    }
     return $bgaspbar;
   }
 
