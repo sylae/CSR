@@ -49,8 +49,13 @@ class webpage extends CSR {
       $pct[$cat] = ($tot != 0) ? $num / $tot * 100 : 0; // DO NOT ROUND OR THIS WILL GET FUCKED
       $pf[$cat] = number_format($pct[$cat], 2); // use this for labels.
     }
-    if ($tot == 0) {
-      $bgaspbar = '<div class="progress"><div class="progress-bar" style="width:100%;background-color:#aaa;color:#333"">Unrated</div>';
+    if ($tot < 5) {
+      $p = $tot * 20;
+      $bgaspbar = '<div class="progress" style="min-width:8em;position:relative">'
+        . '<span style="position:absolute;right:0;left:0;text-align:center;">Unranked ('.$tot.'/5)</span>'
+        . '<div class="progress-bar progress-bar-striped" style="width:'.$p.'%;background-color:#aaa;color:#333;"></div>'
+        . '<div class="progress-bar" style="width:'.(100-$p).'%;background-color:#aaa;color:#333;"></div>'
+        . '</div>';
     } else {
       $bgaspbar = <<<EOT
 <div class="progress" style="min-width:8em;">
