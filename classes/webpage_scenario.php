@@ -154,6 +154,13 @@ EOT;
     $scb = $b['rating'];
     $na = $a['reviews'];
     $nb = $b['reviews'];
+    if ($na < 5 || $nb < 5) {
+      // <5 = sort to bottom
+      if ($na == $nb) {
+        return 0;
+      }
+      return ($na > $nb) ? -1 : 1;
+    }
     if ($sca == $scb) {
       if ($na == $nb) {
         return 0;
