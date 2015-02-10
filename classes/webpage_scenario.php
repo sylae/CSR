@@ -138,8 +138,8 @@ EOT;
     foreach ($scens as $d => $payload) {
       $bar = $this->buildBGBar($payload['bgasp']);
       $r.= "<tr><td><a href=\".?p=scenario&tid=" . $payload['tid'] . "\">" .
-        $payload['title'] . "</a><br /><small><em>By ".$payload['author']."</em></small></td><td><strong>" . number_format($payload['rating'], 1) .
-        "</strong><small>/5.0</small> with " . $payload['reviews'] . (($payload['reviews']==1) ? " review" : " reviews") . $bar . "</td></tr>";
+        $payload['title'] . "</a><br /><small><em>By " . $payload['author'] . "</em></small></td><td><strong>" . number_format($payload['rating'], 1) .
+        "</strong><small>/5.0</small> with " . $payload['reviews'] . (($payload['reviews'] == 1) ? " review" : " reviews") . $bar . "</td></tr>";
     }
     $r.= <<< EOT
       </table>
