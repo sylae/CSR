@@ -9,7 +9,11 @@ require 'classes.php';
 
 $page = preg_replace("/[^[:alnum:]]/ui", '', (array_key_exists('p', $_GET) ? $_GET['p'] : 'front'));
 $c = 'webpage_' . $page;
-$c = new $c;
+if (class_exists($c)) {
+  $c = new $c;
+} else {
+  $c = new webpage_notfound;
+}
 ?>
 <!DOCTYPE html>
 <html>

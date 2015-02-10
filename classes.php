@@ -31,6 +31,7 @@ require 'classes/webuser.php';
 require 'classes/webpage.php';
 require 'classes/webpage_front.php';
 require 'classes/webpage_scenario.php';
+require 'classes/webpage_notfound.php';
 
 // queries
 require 'classes/queryCSR.php';
